@@ -1,0 +1,3 @@
+include ':VSlider'
+include ':app'
+rootProject.name = "VSliderExample"
