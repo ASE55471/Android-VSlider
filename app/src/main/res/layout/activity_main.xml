@@ -7,13 +7,17 @@
     tools:context=".MainActivity">
 
     <com.ltgd.vslider.Slider
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:id="@+id/slider"
+        android:layout_width="360dp"
+        android:layout_height="240dp"
         android:background="#ccc"
         android:padding="48dp"
+        app:orientation="vertical"
+        app:progressDrawableMinWidth="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+ />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

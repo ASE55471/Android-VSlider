@@ -7,6 +7,7 @@
         </attr>
         <attr name="progressDrawable" format="color|reference" />
         <attr name="progress" format="integer" />
+        <attr name="progressStart" format="integer" />
         <attr name="progressDrawableDisplayType" format="enum" >
             <enum name="start" value="0"/>
             <enum name="middle" value="1"/>
@@ -14,5 +15,6 @@
         </attr>
         <attr name="thumbnail" format="reference" />
         <attr name="thumbnailPress" format="reference" />
+        <attr name="progressDrawableMinWidth" format="dimension" />
     </declare-styleable>
 </resources>

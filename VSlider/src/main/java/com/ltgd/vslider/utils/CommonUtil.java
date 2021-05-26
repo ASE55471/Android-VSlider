@@ -10,4 +10,8 @@ public class CommonUtil {
         return value;
     }
 
+    public static float convertDpToPx(float dp, float density){
+        return dp * density;
+    }
+
 }
