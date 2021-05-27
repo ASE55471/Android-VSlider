@@ -16,5 +16,6 @@
         <attr name="thumbnail" format="reference" />
         <attr name="thumbnailPress" format="reference" />
         <attr name="progressDrawableMinWidth" format="dimension" />
+        <attr name="touchAreaRatio" format="float" />
     </declare-styleable>
 </resources>

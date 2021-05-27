@@ -6,21 +6,15 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import androidx.core.content.ContextCompat;
 
-import com.ltgd.vslider.components.ProgressDrawable;
-import com.ltgd.vslider.components.Thumbnail;
-import com.ltgd.vslider.utils.CommonUtil;
+import com.ltgd.vslider.component.ProgressDrawable;
+import com.ltgd.vslider.component.Thumbnail;
+import com.ltgd.vslider.util.CommonUtil;
 
-/**
- * TODO: document your custom view class.
- */
 public class Slider extends View {
 
     public final static String TAG = "Slider";
@@ -35,10 +29,10 @@ public class Slider extends View {
     Thumbnail mThumbnail;
     Thumbnail mThumbnailPress;
     float mProgressDrawableMinWidth;
+    float mTouchAreaRatio;
 
     //variables
     Rect mMainRect;
-    float mProgressPercentage;
     boolean mIsSliding;
     OnSliderChangeListener onSliderChangeListener;
 
@@ -112,11 +106,18 @@ public class Slider extends View {
 
         if (a.getDrawable(R.styleable.Slider_progressDrawable) != null)
             mProgressDrawable = new ProgressDrawable(a.getDrawable(R.styleable.Slider_progressDrawable));
-        else
-            mProgressDrawable = new ProgressDrawable(ContextCompat.getDrawable(getContext(),
-                    R.drawable.seekbar_progress_drawable_default));
+        else {
 
-        mProgress = a.getInt(R.styleable.Slider_progress, 0);
+            if (mOrientation == Orientation.vertical)
+                mProgressDrawable = new ProgressDrawable(ContextCompat.getDrawable(getContext(),
+                        R.drawable.seekbar_progress_drawable_default_vertical));
+            else
+                mProgressDrawable = new ProgressDrawable(ContextCompat.getDrawable(getContext(),
+                        R.drawable.seekbar_progress_drawable_default_horizontal));
+        }
+
+
+        mProgress = a.getInt(R.styleable.Slider_progress, 70);
         mProgressStart = a.getInt(R.styleable.Slider_progressStart, 0);
         mProgressDrawableDisplayType = ProgressDrawableDisplayType.
                 fromId(a.getInt(R.styleable.Slider_progressDrawableDisplayType, 0));
@@ -136,10 +137,11 @@ public class Slider extends View {
         mProgressDrawableMinWidth = a.getDimension(R.styleable.Slider_progressDrawableMinWidth,
                 CommonUtil.convertDpToPx(20, metrics.density));
 
+        mTouchAreaRatio = a.getFloat(R.styleable.Slider_touchAreaRatio,
+                1.0f);
+
         a.recycle();
 
-        //Test
-        mThumbnail.setTouchAreaRatio(2.0f);
     }
 
 
@@ -159,6 +161,7 @@ public class Slider extends View {
 
         int mCenterX = (topLeftX + bottomRightX) / 2;
         int mCenterY = (topLeftY + bottomRightY) / 2;
+
         //init main area
         mMainRect = new Rect(topLeftX, topLeftY, bottomRightX, bottomRightY);
 
@@ -166,21 +169,26 @@ public class Slider extends View {
         mProgressDrawable.setAvailableArea(mMainRect);
         mProgressDrawable.setPosition(mCenterX, mCenterY);
         mProgressDrawable.setMinWidth(mProgressDrawableMinWidth);
+        mProgressDrawable.setProgressStart(mProgressStart);
         mProgressDrawable.setOrientation(mOrientation);
+        mProgressDrawable.setMax(mMax);
+        mProgressDrawable.setProgressDrawableDisplayType(mProgressDrawableDisplayType);
+        mProgressDrawable.setProgress(mProgress);
 
         //init thumbnail
         mThumbnail.setAvailableArea(mMainRect); //restrict active area
         mThumbnail.setMax(mMax);
         mThumbnail.setPosition(mCenterX, mCenterY);
         mThumbnail.setOrientation(mOrientation);
+        mThumbnail.setProgress(mProgress);
+        mThumbnail.setTouchAreaRatio(mTouchAreaRatio);
         mThumbnail.setOnThumbnailChangeListener(new Thumbnail.OnThumbnailChangeListener() {
             @Override
             public void onProgressChanged(float centerX, float centerY, int progress) {
                 if (onSliderChangeListener != null)
                     onSliderChangeListener.onProgressChanged(Slider.this, progress, true);
                 mProgress = progress;
-                mProgressPercentage = (float) mProgress / (float) mMax;
-                mProgressDrawable.setProgressPercentage(mProgressPercentage);
+                mProgressDrawable.setProgress(mProgress);
                 postInvalidate();
             }
         });

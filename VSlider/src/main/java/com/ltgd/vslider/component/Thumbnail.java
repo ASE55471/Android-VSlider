@@ -1,12 +1,11 @@
-package com.ltgd.vslider.components;
+package com.ltgd.vslider.component;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
-import com.ltgd.vslider.Slider;
 import com.ltgd.vslider.Slider.Orientation;
-import com.ltgd.vslider.utils.CommonUtil;
+
+import static com.ltgd.vslider.util.CommonUtil.*;
 
 public class Thumbnail {
 
@@ -37,30 +36,32 @@ public class Thumbnail {
     }
 
     public void setPosition(float centerX, float centerY) {
-        setPositionInternal(centerX, centerY);
+        setPositionInternal(centerX, centerY, true);
     }
 
-    private void setPositionInternal(float centerX, float centerY) {
+    private void setPositionInternal(float centerX, float centerY, boolean formUser) {
 
         switch (orientation) {
             default:
             case undefined:
                 break;
             case vertical:
-                progress = getProgressFromPosition(availableArea.top, availableArea.bottom, centerY);
-                centerY = getPositionFromProgress(availableArea.top, availableArea.bottom, progress);
+                if (formUser)
+                    progress = getProgressFromPosition(availableArea.top, availableArea.bottom, centerY, max);
+                centerY = getPositionFromProgress(availableArea.top, availableArea.bottom, progress, max);
                 centerX = this.centerX;
                 break;
             case horizontal:
-                progress = getProgressFromPosition(availableArea.right, availableArea.left, centerX);
-                centerX = getPositionFromProgress(availableArea.right, availableArea.left, progress);
+                if (formUser)
+                    progress = getProgressFromPosition(availableArea.right, availableArea.left, centerX, max);
+                centerX = getPositionFromProgress(availableArea.right, availableArea.left, progress, max);
                 centerY = this.centerY;
                 break;
         }
 
         if (availableArea != null) {
-            centerX = CommonUtil.valueCut(centerX, availableArea.right, availableArea.left);
-            centerY = CommonUtil.valueCut(centerY, availableArea.bottom, availableArea.top);
+            centerX = valueCut(centerX, availableArea.right, availableArea.left);
+            centerY = valueCut(centerY, availableArea.bottom, availableArea.top);
         }
 
         this.centerX = centerX;
@@ -125,12 +126,14 @@ public class Thumbnail {
         return centerY;
     }
 
-    private int getProgressFromPosition(float p1, float p2, float pT) {
-        return Math.round(((p2 - pT) / (p2 - p1)) * (float) max);
+    public void setProgress(int progress) {
+        this.progress = progress;
+        updatePosition();
     }
 
-    public float getPositionFromProgress(float p1, float p2, int progress) {
-        return -((float) progress / (float) max * (p2 - p1)) + p2;
+    private void updatePosition() {
+        setPositionInternal(centerX, centerY, false);
     }
+
 
 }
