@@ -1,4 +1,4 @@
-package com.ltgd.vslider.component;
+package com.ltgd.vslider;
 
 import android.graphics.Rect;
 import android.graphics.drawable.ClipDrawable;
@@ -8,9 +8,9 @@ import android.graphics.drawable.LayerDrawable;
 import com.ltgd.vslider.Slider.ProgressDrawableDisplayType;
 import com.ltgd.vslider.Slider.Orientation;
 
-import static com.ltgd.vslider.util.CommonUtil.getPositionFromProgress;
+import static com.ltgd.vslider.CommonUtil.getPositionFromProgress;
 
-public class ProgressDrawable {
+class ProgressDrawable {
 
     LayerDrawable layerDrawable;
     Rect availableArea;
@@ -20,13 +20,14 @@ public class ProgressDrawable {
     int max;
     int progressStart;
     ProgressDrawableDisplayType progressDrawableDisplayType;
+    static final float clipLevelMax = 10000.0f;
 
-    public ProgressDrawable(Drawable drawable) {
+    ProgressDrawable(Drawable drawable) {
         this.layerDrawable = (LayerDrawable) drawable;
         this.orientation = Orientation.undefined;
     }
 
-    public void setPosition(float centerX, float centerY) {
+    void setPosition(float centerX, float centerY) {
         float width;
         this.centerX = centerX;
         this.centerY = centerY;
@@ -51,12 +52,12 @@ public class ProgressDrawable {
         layerDrawable.setBounds(left, top, right, bottom);
     }
 
-    public void setProgress(int progress) {
+    void setProgress(int progress) {
         switch (progressDrawableDisplayType) {
             default:
             case start:
                 ClipDrawable progressDrawableStart = (ClipDrawable) layerDrawable.getDrawable(1);
-                progressDrawableStart.setLevel(Math.round(10000.0f * ((float) progress / (float) max)));
+                progressDrawableStart.setLevel(Math.round(clipLevelMax * ((float) progress / (float) max)));
                 break;
             case middle:
 
@@ -68,22 +69,22 @@ public class ProgressDrawable {
                 float downPercent = Math.max(0, -((float) delta / (float) downMax));
 
                 ClipDrawable progressDrawableMiddleUp = (ClipDrawable) layerDrawable.getDrawable(1);
-                progressDrawableMiddleUp.setLevel(Math.round(10000.0f * topPercent));
+                progressDrawableMiddleUp.setLevel(Math.round(clipLevelMax * topPercent));
 
                 ClipDrawable progressDrawableMiddleDown = (ClipDrawable) layerDrawable.getDrawable(2);
-                progressDrawableMiddleDown.setLevel(Math.round(10000.0f * downPercent));
+                progressDrawableMiddleDown.setLevel(Math.round(clipLevelMax * downPercent));
 
                 break;
             case end:
                 ClipDrawable progressDrawableEnd = (ClipDrawable) layerDrawable.getDrawable(1);
-                progressDrawableEnd.setLevel(Math.round(10000.0f - (10000.0f * ((float) progress / (float) max))));
+                progressDrawableEnd.setLevel(Math.round(clipLevelMax - (clipLevelMax * ((float) progress / (float) max))));
                 break;
         }
 
         updatePosition();
     }
 
-    public void setProgressDrawableDisplayType(ProgressDrawableDisplayType progressDrawableDisplayType) {
+    void setProgressDrawableDisplayType(ProgressDrawableDisplayType progressDrawableDisplayType) {
         this.progressDrawableDisplayType = progressDrawableDisplayType;
 
         switch (progressDrawableDisplayType) {
@@ -137,7 +138,6 @@ public class ProgressDrawable {
                     progressDrawableMiddleDown.setBounds(left, top, right, bottom);
 
                 }
-
                 break;
 
             case end:
@@ -147,7 +147,7 @@ public class ProgressDrawable {
         updatePosition();
     }
 
-    public Drawable getDrawable() {
+    Drawable getDrawable() {
         return (Drawable) layerDrawable;
     }
 
@@ -155,24 +155,24 @@ public class ProgressDrawable {
         setPosition(centerX, centerY);
     }
 
-    public void setMax(int max) {
+    void setMax(int max) {
         this.max = max;
     }
 
-    public void setProgressStart(int progressStart) {
+    void setProgressStart(int progressStart) {
         this.progressStart = progressStart;
     }
 
-    public void setAvailableArea(Rect availableArea) {
+    void setAvailableArea(Rect availableArea) {
         this.availableArea = availableArea;
     }
 
-    public void setMinWidth(float minWidth) {
+    void setMinWidth(float minWidth) {
         this.minWidth = minWidth;
         updatePosition();
     }
 
-    public void setOrientation(Orientation orientation) {
+    void setOrientation(Orientation orientation) {
         this.orientation = orientation;
         updatePosition();
     }

@@ -1,13 +1,14 @@
-package com.ltgd.vslider.component;
+package com.ltgd.vslider;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.ltgd.vslider.Slider.Orientation;
 
-import static com.ltgd.vslider.util.CommonUtil.*;
+import static com.ltgd.vslider.CommonUtil.*;
 
-public class Thumbnail {
+class Thumbnail {
 
     Drawable drawable;
     float extraX, extraY;
@@ -17,10 +18,12 @@ public class Thumbnail {
     Orientation orientation;
     int progress;
     int max;
+    float drawableRatio;
     OnThumbnailChangeListener onThumbnailChangeListener;
 
-    public Thumbnail(Drawable drawable) {
+    Thumbnail(Drawable drawable ,float drawableRatio ) {
         this.drawable = drawable;
+        this.drawableRatio = drawableRatio;
         this.extraX = 0;
         this.extraY = 0;
         this.orientation = Orientation.undefined;
@@ -28,18 +31,23 @@ public class Thumbnail {
 
     //listener
     public interface OnThumbnailChangeListener {
-        void onProgressChanged(float centerX, float centerY, int progress);
+        void onProgressChanged(float centerX, float centerY, int progress,boolean isFromUser);
     }
 
-    public void setRelativePosition(float x, float y) {
+    void setRelativePosition(float x, float y) {
         setPosition(x - toCenterX, y - toCenterY);
     }
 
-    public void setPosition(float centerX, float centerY) {
+    void setPosition(float centerX, float centerY) {
         setPositionInternal(centerX, centerY, true);
     }
 
     private void setPositionInternal(float centerX, float centerY, boolean formUser) {
+
+        if (availableArea != null) {
+            centerX = valueCut(centerX, availableArea.right, availableArea.left);
+            centerY = valueCut(centerY, availableArea.bottom, availableArea.top);
+        }
 
         switch (orientation) {
             default:
@@ -59,30 +67,25 @@ public class Thumbnail {
                 break;
         }
 
-        if (availableArea != null) {
-            centerX = valueCut(centerX, availableArea.right, availableArea.left);
-            centerY = valueCut(centerY, availableArea.bottom, availableArea.top);
-        }
-
         this.centerX = centerX;
         this.centerY = centerY;
 
         if (onThumbnailChangeListener != null)
-            onThumbnailChangeListener.onProgressChanged(this.centerX, this.centerY, progress);
+            onThumbnailChangeListener.onProgressChanged(this.centerX, this.centerY, progress,formUser);
 
         int left = Math.round(centerX - (float) drawable.getIntrinsicWidth() / 2);
         int top = Math.round(centerY - (float) drawable.getIntrinsicHeight() / 2);
         int right = Math.round(centerX + (float) drawable.getIntrinsicWidth() / 2);
         int bottom = Math.round(centerY + (float) drawable.getIntrinsicHeight() / 2);
 
-        drawable.setBounds(left, top, right, bottom);
+        setBounds(left, top, right, bottom);
     }
 
-    public boolean isTouched(float x, float y) {
+    boolean isTouched(float x, float y) {
         return isTouched(x, y, true);
     }
 
-    public boolean isTouched(float x, float y, boolean setDisToCenter) {
+    boolean isTouched(float x, float y, boolean setDisToCenter) {
         if (setDisToCenter) {
             toCenterX = x - centerX;
             toCenterY = y - centerY;
@@ -91,49 +94,70 @@ public class Thumbnail {
                 y >= (float) drawable.getBounds().top - extraY && y <= (float) drawable.getBounds().bottom + extraY;
     }
 
-    public void setTouchAreaRatio(float ratio) {
+    void setTouchAreaRatio(float ratio) {
         extraX = ((float) drawable.getIntrinsicWidth() * ratio
                 - drawable.getIntrinsicWidth()) / 2;
         extraY = ((float) drawable.getIntrinsicHeight() * ratio
                 - drawable.getIntrinsicHeight()) / 2;
     }
 
-    public void setAvailableArea(Rect availableArea) {
+    void setDrawableRatio(float drawableRatio) {
+        this.drawableRatio = drawableRatio;
+    }
+
+    void setAvailableArea(Rect availableArea) {
         this.availableArea = availableArea;
     }
 
-    public void setOrientation(Orientation orientation) {
+    void setOrientation(Orientation orientation) {
         this.orientation = orientation;
     }
 
-    public void setOnThumbnailChangeListener(OnThumbnailChangeListener onThumbnailChangeListener) {
+    void setOnThumbnailChangeListener(OnThumbnailChangeListener onThumbnailChangeListener) {
         this.onThumbnailChangeListener = onThumbnailChangeListener;
     }
 
-    public void setMax(int max) {
+    void setMax(int max) {
         this.max = max;
     }
 
-    public Drawable getDrawable() {
+    Drawable getDrawable() {
         return drawable;
     }
 
-    public float getCenterX() {
+    float getCenterX() {
         return centerX;
     }
 
-    public float getCenterY() {
+    float getCenterY() {
         return centerY;
     }
 
-    public void setProgress(int progress) {
+    void setProgress(int progress) {
         this.progress = progress;
         updatePosition();
+    }
+
+    private void setBounds(int left, int top, int right, int bottom) {
+
+        left -= (getWidth() - drawable.getIntrinsicWidth())/2;
+        top -=  (getWidth() - drawable.getIntrinsicHeight())/2;
+        right +=  (getWidth() - drawable.getIntrinsicWidth())/2;
+        bottom += (getWidth() - drawable.getIntrinsicHeight()) / 2;
+
+        drawable.setBounds(left, top, right, bottom);
+    }
+
+    int getWidth() {
+        return Math.round(drawable.getIntrinsicWidth() * drawableRatio);
+    }
+
+    int getHeight() {
+        return Math.round(drawable.getIntrinsicHeight() * drawableRatio);
     }
 
     private void updatePosition() {
         setPositionInternal(centerX, centerY, false);
     }
-
 
 }

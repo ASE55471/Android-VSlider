@@ -17,5 +17,10 @@
         <attr name="thumbnailPress" format="reference" />
         <attr name="progressDrawableMinWidth" format="dimension" />
         <attr name="touchAreaRatio" format="float" />
+
+        <attr name="thumbnailDrawableRatio" format="float" />
+        <attr name="thumbnailPressDrawableRatio" format="float" />
+
+        <attr name="relativeTouchPoint" format="boolean" />
     </declare-styleable>
 </resources>
