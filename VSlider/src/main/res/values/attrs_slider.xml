@@ -22,5 +22,6 @@
         <attr name="thumbnailPressDrawableRatio" format="float" />
 
         <attr name="relativeTouchPoint" format="boolean" />
+        <attr name="rotateThumbnailDrawableDegree" format="integer" />
     </declare-styleable>
 </resources>

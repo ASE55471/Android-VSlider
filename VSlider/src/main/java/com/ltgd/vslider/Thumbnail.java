@@ -21,7 +21,7 @@ class Thumbnail {
     float drawableRatio;
     OnThumbnailChangeListener onThumbnailChangeListener;
 
-    Thumbnail(Drawable drawable ,float drawableRatio ) {
+    Thumbnail(Drawable drawable, float drawableRatio) {
         this.drawable = drawable;
         this.drawableRatio = drawableRatio;
         this.extraX = 0;
@@ -31,7 +31,7 @@ class Thumbnail {
 
     //listener
     public interface OnThumbnailChangeListener {
-        void onProgressChanged(float centerX, float centerY, int progress,boolean isFromUser);
+        void onProgressChanged(float centerX, float centerY, int progress, boolean isFromUser);
     }
 
     void setRelativePosition(float x, float y) {
@@ -71,7 +71,7 @@ class Thumbnail {
         this.centerY = centerY;
 
         if (onThumbnailChangeListener != null)
-            onThumbnailChangeListener.onProgressChanged(this.centerX, this.centerY, progress,formUser);
+            onThumbnailChangeListener.onProgressChanged(this.centerX, this.centerY, progress, formUser);
 
         int left = Math.round(centerX - (float) drawable.getIntrinsicWidth() / 2);
         int top = Math.round(centerY - (float) drawable.getIntrinsicHeight() / 2);
@@ -134,25 +134,26 @@ class Thumbnail {
     }
 
     void setProgress(int progress) {
+        progress = (int) CommonUtil.valueCut(progress, max, 0);
         this.progress = progress;
         updatePosition();
     }
 
     private void setBounds(int left, int top, int right, int bottom) {
 
-        left -= (getWidth() - drawable.getIntrinsicWidth())/2;
-        top -=  (getWidth() - drawable.getIntrinsicHeight())/2;
-        right +=  (getWidth() - drawable.getIntrinsicWidth())/2;
-        bottom += (getWidth() - drawable.getIntrinsicHeight()) / 2;
+        left -= (getWidth() - drawable.getIntrinsicWidth()) / 2;
+        top -= (getHeight() - drawable.getIntrinsicHeight()) / 2;
+        right += (getWidth() - drawable.getIntrinsicWidth()) / 2;
+        bottom += (getHeight() - drawable.getIntrinsicHeight()) / 2;
 
         drawable.setBounds(left, top, right, bottom);
     }
 
-    int getWidth() {
+    private int getWidth() {
         return Math.round(drawable.getIntrinsicWidth() * drawableRatio);
     }
 
-    int getHeight() {
+    private int getHeight() {
         return Math.round(drawable.getIntrinsicHeight() * drawableRatio);
     }
 

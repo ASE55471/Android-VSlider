@@ -21,25 +21,15 @@
         app:progressStart="70"
         />
 
-    <com.ltgd.vslider.Slider
-        android:id="@+id/slider2"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:background="#CCCCCC"
-        android:padding="48dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycleView"
 
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/slider"
-        app:orientation="vertical"
-        app:progressStart="35"
-        app:progress="25"
-        app:progressDrawableDisplayType="middle"
-        app:progressDrawableMinWidth="24dp"
-        app:thumbnailDrawableRatio="1.3"
-        app:thumbnailPressDrawableRatio="1.6"
-        app:relativeTouchPoint="true"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/slider" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

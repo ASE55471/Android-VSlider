@@ -28,6 +28,7 @@ public class Slider extends View {
     float mProgressDrawableMinWidth;
     float mTouchAreaRatio, mThumbnailDrawableRatio, mThumbnailPressDrawableRatio;
     boolean mRelativeTouchPoint;
+    Drawable mProgressD, mThumbnailD, mThumbnailPressD;
 
     //variables
     Rect mMainRect;
@@ -108,16 +109,13 @@ public class Slider extends View {
                 1.0f);
         mThumbnailPressDrawableRatio = a.getFloat(R.styleable.Slider_thumbnailPressDrawableRatio,
                 1.0f);
-        if (a.getDrawable(R.styleable.Slider_progressDrawable) != null)
-            mProgressDrawable = new ProgressDrawable(a.getDrawable(R.styleable.Slider_progressDrawable));
-        else {
 
+        mProgressD = a.getDrawable(R.styleable.Slider_progressDrawable);
+        if (mProgressD == null) {
             if (mOrientation == Orientation.vertical)
-                mProgressDrawable = new ProgressDrawable(ContextCompat.getDrawable(getContext(),
-                        R.drawable.seekbar_progress_drawable_default_vertical));
+                mProgressD = ContextCompat.getDrawable(getContext(), R.drawable.seekbar_progress_drawable_default_vertical);
             else
-                mProgressDrawable = new ProgressDrawable(ContextCompat.getDrawable(getContext(),
-                        R.drawable.seekbar_progress_drawable_default_horizontal));
+                mProgressD = ContextCompat.getDrawable(getContext(), R.drawable.seekbar_progress_drawable_default_horizontal);
         }
 
         mProgress = a.getInt(R.styleable.Slider_progress, 0);
@@ -125,26 +123,30 @@ public class Slider extends View {
         mProgressDrawableDisplayType = ProgressDrawableDisplayType.
                 fromId(a.getInt(R.styleable.Slider_progressDrawableDisplayType, 0));
 
-        if (a.getDrawable(R.styleable.Slider_thumbnail) != null)
-            mThumbnail = new Thumbnail(a.getDrawable(R.styleable.Slider_thumbnail), mThumbnailDrawableRatio);
-        else
-            mThumbnail = new Thumbnail(ContextCompat.getDrawable(getContext(),
-                    R.drawable.seekbar_thumbnail_default), mThumbnailDrawableRatio);
+        mThumbnailD = a.getDrawable(R.styleable.Slider_thumbnail);
+        if (mThumbnailD == null)
+            mThumbnailD = ContextCompat.getDrawable(getContext(),
+                    R.drawable.seekbar_thumbnail_default);
 
-        if (a.getDrawable(R.styleable.Slider_thumbnailPress) != null)
-            mThumbnailPress = new Thumbnail(a.getDrawable(R.styleable.Slider_thumbnailPress), mThumbnailPressDrawableRatio);
-        else
-            mThumbnailPress = new Thumbnail(ContextCompat.getDrawable(getContext(),
-                    R.drawable.seekbar_thumbnail_press_default), mThumbnailPressDrawableRatio);
+        mThumbnailPressD = a.getDrawable(R.styleable.Slider_thumbnailPress);
+        if (mThumbnailPressD == null)
+            mThumbnailPressD = ContextCompat.getDrawable(getContext(),
+                    R.drawable.seekbar_thumbnail_press_default);
 
         mProgressDrawableMinWidth = a.getDimension(R.styleable.Slider_progressDrawableMinWidth,
                 CommonUtil.convertDpToPx(20, metrics.density));
 
         mRelativeTouchPoint = a.getBoolean(R.styleable.Slider_relativeTouchPoint, false);
         a.recycle();
+
     }
 
     private void init() {
+
+        mProgressDrawable = new ProgressDrawable(mProgressD);
+        mThumbnail = new Thumbnail(mThumbnailD, mThumbnailDrawableRatio);
+        mThumbnailPress = new Thumbnail(mThumbnailPressD, mThumbnailPressDrawableRatio);
+
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
         int paddingRight = getPaddingRight();
@@ -160,6 +162,8 @@ public class Slider extends View {
 
         int thumbPressHalfHeight = Math.round((mThumbnailPress.getDrawable().getIntrinsicHeight() / 2f) * mThumbnailPressDrawableRatio);
         int thumbPressHalfWidth = Math.round((mThumbnailPress.getDrawable().getIntrinsicWidth() / 2f) * mThumbnailPressDrawableRatio);
+
+        mProgress = (int) CommonUtil.valueCut(mProgress, mMax, 0);
 
         //init main area
         if (mOrientation == Orientation.vertical) {
@@ -190,7 +194,7 @@ public class Slider extends View {
         mThumbnail.setOnThumbnailChangeListener(new Thumbnail.OnThumbnailChangeListener() {
             @Override
             public void onProgressChanged(float centerX, float centerY, int progress, boolean isFromUser) {
-                if (onSliderChangeListener != null && (!mIsInit || mProgress != progress)) {
+                if (onSliderChangeListener != null && (/*!mIsInit ||*/ mProgress != progress)) {
                     onSliderChangeListener.onProgressChanged(Slider.this, progress, isFromUser);
                 }
                 mProgress = progress;
@@ -235,10 +239,10 @@ public class Slider extends View {
 
         if (mOrientation == Orientation.vertical) {
             minH = getPaddingBottom() + getPaddingTop() + getSuggestedMinimumHeight();
-            minW = mThumbnailPress.getWidth() + getPaddingLeft() + getPaddingRight();
+            minW = Math.round(mThumbnailPressD.getIntrinsicWidth() * mThumbnailPressDrawableRatio + getPaddingLeft() + getPaddingRight());
         } else {
             minW = getPaddingLeft() + getPaddingRight() + getSuggestedMinimumWidth();
-            minH = mThumbnailPress.getHeight() + getPaddingBottom() + getPaddingTop();
+            minH = Math.round(mThumbnailPressD.getIntrinsicHeight() * mThumbnailPressDrawableRatio + getPaddingBottom() + getPaddingTop());
         }
 
         int w = resolveSizeAndState(minW, widthMeasureSpec, 0);
@@ -258,10 +262,11 @@ public class Slider extends View {
                     if (onSliderChangeListener != null)
                         onSliderChangeListener.onStartTrackingTouch(this);
                     mIsSliding = true;
+                    this.getParent().requestDisallowInterceptTouchEvent(true);
                 }
             case MotionEvent.ACTION_MOVE:
                 if (mIsSliding) {
-                    if(mRelativeTouchPoint)
+                    if (mRelativeTouchPoint)
                         mThumbnail.setRelativePosition(x, y);
                     else
                         mThumbnail.setPosition(x, y);
@@ -273,7 +278,8 @@ public class Slider extends View {
             case MotionEvent.ACTION_CANCEL:
                 if (mIsSliding) {
                     mIsSliding = false;
-                    if(mRelativeTouchPoint)
+                    this.getParent().requestDisallowInterceptTouchEvent(false);
+                    if (mRelativeTouchPoint)
                         mThumbnail.setRelativePosition(x, y);
                     else
                         mThumbnail.setPosition(x, y);
@@ -291,8 +297,6 @@ public class Slider extends View {
     }
 
     public void setProgress(int progress) {
-        progress = (int) CommonUtil.valueCut(progress, mMax, 0);
-
         if (mIsInit) {
             mThumbnail.setProgress(progress);
         } else {
