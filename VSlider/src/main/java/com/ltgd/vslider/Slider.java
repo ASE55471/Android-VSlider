@@ -173,10 +173,10 @@ public class Slider extends View {
         //init main area
         if (mOrientation == Orientation.vertical) {
             mMainRect = new Rect(left, top + thumbPressHalfHeight + progressAreaOffset,
-                    right, bottom - thumbPressHalfHeight + progressAreaOffset);
+                    right, bottom - thumbPressHalfHeight - progressAreaOffset);
         } else {
             mMainRect = new Rect(left + thumbPressHalfWidth + progressAreaOffset, top,
-                    right - thumbPressHalfWidth + progressAreaOffset, bottom);
+                    right - thumbPressHalfWidth - progressAreaOffset, bottom);
         }
 
         //init progressDrawable
