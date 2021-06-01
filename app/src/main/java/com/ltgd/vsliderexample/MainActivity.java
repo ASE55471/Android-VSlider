@@ -24,17 +24,19 @@ public class MainActivity extends AppCompatActivity {
 
         Slider slider = (Slider) findViewById(R.id.slider);
         slider.setOnSliderChangeListener(sliderChangeListener);
-        slider.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(MainActivity.this,"onClick",Toast.LENGTH_SHORT).show();
-            }
-        });
+        slider.setOnClickListener(onClickListener);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycleView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
         recyclerView.setAdapter(new CustomAdapter(new String[]{"test", "test", "test", "test", "test", "test"}));
     }
+
+    View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(MainActivity.this,"onClick",Toast.LENGTH_SHORT).show();
+        }
+    };
 
     Slider.OnSliderChangeListener sliderChangeListener = new Slider.OnSliderChangeListener() {
         @Override
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
                 slider = (Slider) view.findViewById(R.id.slider50);
                 slider.setOnSliderChangeListener(sliderChangeListener);
+                slider.setOnClickListener(onClickListener);
             }
 
             public Slider getSlider() {

@@ -10,16 +10,16 @@ import static com.ltgd.vslider.CommonUtil.*;
 
 class Thumbnail {
 
-    Drawable drawable;
-    float extraX, extraY;
-    float centerX, centerY;
-    float toCenterX, toCenterY;
-    Rect availableArea;
-    Orientation orientation;
-    int progress;
-    int max;
-    float drawableRatio;
-    OnThumbnailChangeListener onThumbnailChangeListener;
+    private Drawable drawable;
+    private float extraX, extraY;
+    private float centerX, centerY;
+    private float toCenterX, toCenterY;
+    private Rect availableArea;
+    private Orientation orientation;
+    private int progress;
+    private int max;
+    private float drawableRatio;
+    private OnThumbnailChangeListener onThumbnailChangeListener;
 
     Thumbnail(Drawable drawable, float drawableRatio) {
         this.drawable = drawable;
@@ -86,12 +86,20 @@ class Thumbnail {
     }
 
     boolean isTouched(float x, float y, boolean setDisToCenter) {
-        if (setDisToCenter) {
-            toCenterX = x - centerX;
-            toCenterY = y - centerY;
+        toCenterX = 0;
+        toCenterY = 0;
+        if (x >= (float) drawable.getBounds().left - extraX &&
+                x <= (float) drawable.getBounds().right + extraX &&
+                y >= (float) drawable.getBounds().top - extraY &&
+                y <= (float) drawable.getBounds().bottom + extraY) {
+            if (setDisToCenter) {
+                toCenterX = x - centerX;
+                toCenterY = y - centerY;
+            }
+            return true;
+        } else {
+            return false;
         }
-        return x >= (float) drawable.getBounds().left - extraX && x <= (float) drawable.getBounds().right + extraX &&
-                y >= (float) drawable.getBounds().top - extraY && y <= (float) drawable.getBounds().bottom + extraY;
     }
 
     void setTouchAreaRatio(float ratio) {

@@ -18,24 +18,24 @@ public class Slider extends View {
     public final static String TAG = "Slider";
 
     //attrs
-    int mMax;
-    Orientation mOrientation; // 0:Vertical 1:Horizontal
-    ProgressDrawable mProgressDrawable;
-    int mProgress;
-    int mProgressStart;
-    ProgressDrawableDisplayType mProgressDrawableDisplayType; //0:Start 1:Middle 2:End
-    Thumbnail mThumbnail, mThumbnailPress;
-    float mProgressDrawableMinWidth;
-    float mTouchAreaRatio, mThumbnailDrawableRatio, mThumbnailPressDrawableRatio;
-    boolean mRelativeTouchPoint;
-    Drawable mProgressD, mThumbnailD, mThumbnailPressD;
-    float mProgressAreaOffset;
+    private int mMax;
+    private Orientation mOrientation; // 0:Vertical 1:Horizontal
+    private ProgressDrawable mProgressDrawable;
+    private int mProgress;
+    private int mProgressStart;
+    private ProgressDrawableDisplayType mProgressDrawableDisplayType; //0:Start 1:Middle 2:End
+    private Thumbnail mThumbnail, mThumbnailPress;
+    private float mProgressDrawableMinWidth;
+    private float mTouchAreaRatio, mThumbnailDrawableRatio, mThumbnailPressDrawableRatio;
+    private boolean mRelativeTouchPoint;
+    private Drawable mProgressD, mThumbnailD, mThumbnailPressD;
+    private float mProgressAreaOffset;
 
     //variables
-    Rect mMainRect;
-    boolean mIsSliding;
-    boolean mIsInit;
-    OnSliderChangeListener onSliderChangeListener;
+    private Rect mMainRect;
+    private boolean mIsSliding,isTouched;
+    private boolean mIsInit;
+    private OnSliderChangeListener onSliderChangeListener;
 
     //enum
     enum Orientation {
@@ -223,7 +223,7 @@ public class Slider extends View {
         super.onDraw(canvas);
         mProgressDrawable.getDrawable().draw(canvas);
 
-        if (mIsSliding) {
+        if (isTouched) {
             mThumbnailPress.getDrawable().draw(canvas);
         } else {
             mThumbnail.getDrawable().draw(canvas);
@@ -264,38 +264,46 @@ public class Slider extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (mThumbnail.isTouched(x, y)) {
+                    isTouched = true;
+                    this.getParent().requestDisallowInterceptTouchEvent(true);
                     if (onSliderChangeListener != null)
                         onSliderChangeListener.onStartTrackingTouch(this);
-                    mIsSliding = true;
-                    this.getParent().requestDisallowInterceptTouchEvent(true);
+                    updateThumbnailPosition(x, y);
+                    postInvalidate();
                 }
+                break;
             case MotionEvent.ACTION_MOVE:
-                if (mIsSliding) {
-                    if (mRelativeTouchPoint)
-                        mThumbnail.setRelativePosition(x, y);
-                    else
-                        mThumbnail.setPosition(x, y);
-                    mThumbnailPress.setPosition(mThumbnail.getCenterX(), mThumbnail.getCenterY());
+                if (isTouched) {
+                    mIsSliding = true;
+                    updateThumbnailPosition(x, y);
                     postInvalidate();
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                performClick();
+                if (!mIsSliding) {
+                    performClick();
+                }
             case MotionEvent.ACTION_CANCEL:
-                if (mIsSliding) {
+                if (mIsSliding || isTouched) {
                     mIsSliding = false;
+                    isTouched = false;
                     this.getParent().requestDisallowInterceptTouchEvent(false);
-                    if (mRelativeTouchPoint)
-                        mThumbnail.setRelativePosition(x, y);
-                    else
-                        mThumbnail.setPosition(x, y);
                     if (onSliderChangeListener != null)
                         onSliderChangeListener.onStopTrackingTouch(this);
+                    updateThumbnailPosition(x, y);
                     postInvalidate();
                 }
                 break;
         }
         return true;
+    }
+
+    void updateThumbnailPosition(float x,float y){
+        if (mRelativeTouchPoint)
+            mThumbnail.setRelativePosition(x, y);
+        else
+            mThumbnail.setPosition(x, y);
+        mThumbnailPress.setPosition(mThumbnail.getCenterX(), mThumbnail.getCenterY());
     }
 
     public void setOnSliderChangeListener(OnSliderChangeListener onSliderChangeListener) {

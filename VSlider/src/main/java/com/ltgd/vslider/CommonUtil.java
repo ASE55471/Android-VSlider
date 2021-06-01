@@ -2,7 +2,6 @@ package com.ltgd.vslider;
 
 class CommonUtil {
 
-
     static float valueCut(float value, float max, float min) {
         if (value > max)
             value = max;

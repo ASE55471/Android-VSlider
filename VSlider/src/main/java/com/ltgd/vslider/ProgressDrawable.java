@@ -12,15 +12,15 @@ import static com.ltgd.vslider.CommonUtil.getPositionFromProgress;
 
 class ProgressDrawable {
 
-    LayerDrawable layerDrawable;
-    Rect availableArea;
-    float minWidth;
-    float centerX, centerY;
-    Orientation orientation;
-    int max;
-    int progressStart;
-    ProgressDrawableDisplayType progressDrawableDisplayType;
-    static final float clipLevelMax = 10000.0f;
+    private LayerDrawable layerDrawable;
+    private Rect availableArea;
+    private float minWidth;
+    private float centerX, centerY;
+    private Orientation orientation;
+    private int max;
+    private int progressStart;
+    private ProgressDrawableDisplayType progressDrawableDisplayType;
+    private static final float clipLevelMax = 10000.0f;
 
     ProgressDrawable(Drawable drawable) {
         this.layerDrawable = (LayerDrawable) drawable;
@@ -94,7 +94,6 @@ class ProgressDrawable {
                 break;
 
             case middle:
-
                 if (orientation == Orientation.vertical) {
                     float width = Math.max(minWidth, (float) layerDrawable.getIntrinsicWidth());
 
