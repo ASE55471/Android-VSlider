@@ -33,7 +33,7 @@ public class Slider extends View {
 
     //variables
     private Rect mMainRect;
-    private boolean mIsSliding,isTouched;
+    private boolean mIsSliding, isTouched;
     private boolean mIsInit;
     private OnSliderChangeListener onSliderChangeListener;
 
@@ -108,8 +108,11 @@ public class Slider extends View {
                 1.0f);
         mThumbnailDrawableRatio = a.getFloat(R.styleable.Slider_thumbnailDrawableRatio,
                 1.0f);
-        mThumbnailPressDrawableRatio = a.getFloat(R.styleable.Slider_thumbnailPressDrawableRatio,
-                1.0f);
+        if (a.hasValue(R.styleable.Slider_thumbnailPressDrawableRatio))
+            mThumbnailPressDrawableRatio = a.getFloat(R.styleable.Slider_thumbnailPressDrawableRatio,
+                    1.0f);
+        else
+            mThumbnailPressDrawableRatio = mThumbnailDrawableRatio;
 
         mProgressD = a.getDrawable(R.styleable.Slider_progressDrawable);
         if (mProgressD == null) {
@@ -132,7 +135,7 @@ public class Slider extends View {
         mThumbnailPressD = a.getDrawable(R.styleable.Slider_thumbnailPress);
         if (mThumbnailPressD == null)
             //deep copy drawable
-            mThumbnailPressD = mThumbnailD.getConstantState().newDrawable().mutate();;
+            mThumbnailPressD = mThumbnailD.getConstantState().newDrawable().mutate();
 
         mProgressDrawableMinWidth = a.getDimension(R.styleable.Slider_progressDrawableMinWidth,
                 CommonUtil.convertDpToPx(20, metrics.density));
@@ -298,7 +301,7 @@ public class Slider extends View {
         return true;
     }
 
-    void updateThumbnailPosition(float x,float y){
+    void updateThumbnailPosition(float x, float y) {
         if (mRelativeTouchPoint)
             mThumbnail.setRelativePosition(x, y);
         else
@@ -324,4 +327,7 @@ public class Slider extends View {
         return mProgress;
     }
 
+    public int getMax() {
+        return mMax;
+    }
 }
