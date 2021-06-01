@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.ltgd.vslider.Slider;
 
@@ -23,6 +24,12 @@ public class MainActivity extends AppCompatActivity {
 
         Slider slider = (Slider) findViewById(R.id.slider);
         slider.setOnSliderChangeListener(sliderChangeListener);
+        slider.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this,"onClick",Toast.LENGTH_SHORT).show();
+            }
+        });
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycleView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));

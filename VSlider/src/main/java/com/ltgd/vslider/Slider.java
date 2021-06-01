@@ -132,7 +132,7 @@ public class Slider extends View {
         mThumbnailPressD = a.getDrawable(R.styleable.Slider_thumbnailPress);
         if (mThumbnailPressD == null)
             mThumbnailPressD = ContextCompat.getDrawable(getContext(),
-                    R.drawable.seekbar_thumbnail_press_default);
+                    R.drawable.seekbar_thumbnail_default);
 
         mProgressDrawableMinWidth = a.getDimension(R.styleable.Slider_progressDrawableMinWidth,
                 CommonUtil.convertDpToPx(20, metrics.density));
@@ -280,6 +280,7 @@ public class Slider extends View {
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                performClick();
             case MotionEvent.ACTION_CANCEL:
                 if (mIsSliding) {
                     mIsSliding = false;
