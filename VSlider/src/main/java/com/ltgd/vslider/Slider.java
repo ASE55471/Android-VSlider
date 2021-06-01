@@ -29,6 +29,7 @@ public class Slider extends View {
     float mTouchAreaRatio, mThumbnailDrawableRatio, mThumbnailPressDrawableRatio;
     boolean mRelativeTouchPoint;
     Drawable mProgressD, mThumbnailD, mThumbnailPressD;
+    float mProgressAreaOffset;
 
     //variables
     Rect mMainRect;
@@ -137,6 +138,8 @@ public class Slider extends View {
                 CommonUtil.convertDpToPx(20, metrics.density));
 
         mRelativeTouchPoint = a.getBoolean(R.styleable.Slider_relativeTouchPoint, false);
+
+        mProgressAreaOffset = a.getDimension(R.styleable.Slider_progressAreaOffset, 1.0f);
         a.recycle();
 
     }
@@ -146,6 +149,8 @@ public class Slider extends View {
         mProgressDrawable = new ProgressDrawable(mProgressD);
         mThumbnail = new Thumbnail(mThumbnailD, mThumbnailDrawableRatio);
         mThumbnailPress = new Thumbnail(mThumbnailPressD, mThumbnailPressDrawableRatio);
+
+        int progressAreaOffset = Math.round(mProgressAreaOffset);
 
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
@@ -167,11 +172,11 @@ public class Slider extends View {
 
         //init main area
         if (mOrientation == Orientation.vertical) {
-            mMainRect = new Rect(left, top + thumbPressHalfHeight,
-                    right, bottom - thumbPressHalfHeight);
+            mMainRect = new Rect(left, top + thumbPressHalfHeight + progressAreaOffset,
+                    right, bottom - thumbPressHalfHeight + progressAreaOffset);
         } else {
-            mMainRect = new Rect(left + thumbPressHalfWidth, top,
-                    right - thumbPressHalfWidth, bottom);
+            mMainRect = new Rect(left + thumbPressHalfWidth + progressAreaOffset, top,
+                    right - thumbPressHalfWidth + progressAreaOffset, bottom);
         }
 
         //init progressDrawable

@@ -23,5 +23,7 @@
 
         <attr name="relativeTouchPoint" format="boolean" />
         <attr name="rotateThumbnailDrawableDegree" format="integer" />
+
+        <attr name="progressAreaOffset" format="dimension" />
     </declare-styleable>
 </resources>
