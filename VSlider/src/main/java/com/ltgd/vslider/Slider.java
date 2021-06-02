@@ -273,6 +273,8 @@ public class Slider extends View {
                         onSliderChangeListener.onStartTrackingTouch(this);
                     updateThumbnailPosition(x, y);
                     postInvalidate();
+                } else {
+                    return false;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
