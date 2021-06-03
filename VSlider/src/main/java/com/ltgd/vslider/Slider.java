@@ -30,6 +30,7 @@ public class Slider extends View {
     private boolean mRelativeTouchPoint;
     private Drawable mProgressD, mThumbnailD, mThumbnailPressD;
     private float mProgressAreaOffset;
+    private int mSmallStep, mStep;
 
     //variables
     private Rect mMainRect;
@@ -143,6 +144,10 @@ public class Slider extends View {
         mRelativeTouchPoint = a.getBoolean(R.styleable.Slider_relativeTouchPoint, false);
 
         mProgressAreaOffset = a.getDimension(R.styleable.Slider_progressAreaOffset, 1.0f);
+
+        mStep = a.getInteger((R.styleable.Slider_step), 1);
+        mSmallStep = a.getInteger((R.styleable.Slider_smallStep), 1);
+
         a.recycle();
 
     }
@@ -196,6 +201,7 @@ public class Slider extends View {
         mThumbnail.setAvailableArea(mMainRect); //restrict active area
         mThumbnail.setDrawableRatio(mThumbnailDrawableRatio);
         mThumbnail.setMax(mMax);
+        mThumbnail.setStep(mStep);
         mThumbnail.setPosition(mCenterX, mCenterY);
         mThumbnail.setOrientation(mOrientation);
         mThumbnail.setTouchAreaRatio(mTouchAreaRatio);

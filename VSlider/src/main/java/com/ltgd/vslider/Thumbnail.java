@@ -20,6 +20,7 @@ class Thumbnail {
     private int max;
     private float drawableRatio;
     private OnThumbnailChangeListener onThumbnailChangeListener;
+    private int step;
 
     Thumbnail(Drawable drawable, float drawableRatio) {
         this.drawable = drawable;
@@ -54,14 +55,18 @@ class Thumbnail {
             case undefined:
                 break;
             case vertical:
-                if (formUser)
+                if (formUser) {
                     progress = getProgressFromPosition(availableArea.top, availableArea.bottom, centerY, max);
+                    progress = Math.round((float) progress / (float) step) * step;
+                }
                 centerY = getPositionFromProgress(availableArea.top, availableArea.bottom, progress, max);
                 centerX = this.centerX;
                 break;
             case horizontal:
-                if (formUser)
+                if (formUser){
                     progress = getProgressFromPosition(availableArea.right, availableArea.left, centerX, max);
+                    progress = Math.round((float) progress / (float) step) * step;
+                }
                 centerX = getPositionFromProgress(availableArea.right, availableArea.left, progress, max);
                 centerY = this.centerY;
                 break;
@@ -167,6 +172,10 @@ class Thumbnail {
 
     private void updatePosition() {
         setPositionInternal(centerX, centerY, false);
+    }
+
+    public void setStep(int step) {
+        this.step = step;
     }
 
 }

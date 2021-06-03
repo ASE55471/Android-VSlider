@@ -25,5 +25,9 @@
         <attr name="rotateThumbnailDrawableDegree" format="integer" />
 
         <attr name="progressAreaOffset" format="dimension" />
+
+        <attr name="step" format="integer" />
+        <attr name="smallStep" format="integer" />
+
     </declare-styleable>
 </resources>
