@@ -270,13 +270,13 @@ public class Slider extends View {
         float x = event.getX();
         float y = event.getY();
 
-        switch (event.getAction()) {
+        switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 if (mThumbnail.isTouched(x, y)) {
-                    isTouched = true;
-                    this.getParent().requestDisallowInterceptTouchEvent(true);
                     if (onSliderChangeListener != null)
                         onSliderChangeListener.onStartTrackingTouch(this);
+                    isTouched = true;
+                    this.getParent().requestDisallowInterceptTouchEvent(true);
                     updateThumbnailPosition(x, y);
                     postInvalidate();
                 } else {
@@ -299,10 +299,10 @@ public class Slider extends View {
                     mIsSliding = false;
                     isTouched = false;
                     this.getParent().requestDisallowInterceptTouchEvent(false);
-                    if (onSliderChangeListener != null)
-                        onSliderChangeListener.onStopTrackingTouch(this);
                     updateThumbnailPosition(x, y);
                     postInvalidate();
+                    if (onSliderChangeListener != null)
+                        onSliderChangeListener.onStopTrackingTouch(this);
                 }
                 break;
         }
@@ -324,6 +324,7 @@ public class Slider extends View {
     public void setProgress(int progress) {
         if (mIsInit) {
             mThumbnail.setProgress(progress);
+            postInvalidate();
         } else {
             //already have a initial call mThumbnail.setProgress(progress) in init() method.
             //so only have to replace mProgress with new progress cause mThumbnail haven't init yet.
