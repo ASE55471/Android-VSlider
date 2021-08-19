@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -15,7 +14,7 @@ import androidx.core.content.ContextCompat;
 
 public class Slider extends View {
 
-    public final static String TAG = "Slider";
+    public static final String TAG = "Slider";
 
     //attrs
     private int mMax;
@@ -37,6 +36,7 @@ public class Slider extends View {
     private boolean mIsSliding, isTouched;
     private boolean mIsInit;
     private OnSliderChangeListener onSliderChangeListener;
+    private int tempProgress;
 
     //enum
     enum Orientation {
@@ -80,26 +80,21 @@ public class Slider extends View {
         void onStopTrackingTouch(Slider slider);
     }
 
-    public Slider(Context context) {
-        super(context);
-        init(null, 0);
-    }
-
     public Slider(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(attrs, 0);
+        initAttrs(attrs, 0);
     }
 
     public Slider(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(attrs, defStyle);
+        initAttrs(attrs, defStyle);
     }
 
-    private void init(AttributeSet attrs, int defStyle) {
+    private void initAttrs(AttributeSet attrs, int defStyle) {
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
 
-        // Load attributes
+        //load attributes
         final TypedArray a = getContext().obtainStyledAttributes(
                 attrs, R.styleable.Slider, defStyle, 0);
 
@@ -208,7 +203,7 @@ public class Slider extends View {
         mThumbnail.setOnThumbnailChangeListener(new Thumbnail.OnThumbnailChangeListener() {
             @Override
             public void onProgressChanged(float centerX, float centerY, int progress, boolean isFromUser) {
-                if (onSliderChangeListener != null && (/*!mIsInit ||*/ mProgress != progress)) {
+                if (onSliderChangeListener != null && mProgress != progress) {
                     onSliderChangeListener.onProgressChanged(Slider.this, progress, isFromUser);
                 }
                 mProgress = progress;
@@ -276,16 +271,17 @@ public class Slider extends View {
                     if (onSliderChangeListener != null)
                         onSliderChangeListener.onStartTrackingTouch(this);
                     isTouched = true;
-                    this.getParent().requestDisallowInterceptTouchEvent(true);
                     updateThumbnailPosition(x, y);
                     postInvalidate();
+                    tempProgress = getProgress();
                 } else {
                     return false;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (isTouched) {
-                    mIsSliding = true;
+                    if (!mIsSliding)
+                        mIsSliding = tempProgress != getProgress();
                     updateThumbnailPosition(x, y);
                     postInvalidate();
                 }
@@ -298,8 +294,6 @@ public class Slider extends View {
                 if (mIsSliding || isTouched) {
                     mIsSliding = false;
                     isTouched = false;
-                    this.getParent().requestDisallowInterceptTouchEvent(false);
-                    updateThumbnailPosition(x, y);
                     postInvalidate();
                     if (onSliderChangeListener != null)
                         onSliderChangeListener.onStopTrackingTouch(this);
@@ -327,7 +321,8 @@ public class Slider extends View {
             postInvalidate();
         } else {
             //already have a initial call mThumbnail.setProgress(progress) in init() method.
-            //so only have to replace mProgress with new progress cause mThumbnail haven't init yet.
+            //so if call mThumbnail.setProgress(progress) before init() called the init() one will
+            //override it.
             mProgress = progress;
         }
     }
@@ -339,4 +334,5 @@ public class Slider extends View {
     public int getMax() {
         return mMax;
     }
+
 }
