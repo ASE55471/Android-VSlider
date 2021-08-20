@@ -35,8 +35,9 @@ public class Slider extends View {
     private Rect mMainRect;
     private boolean mIsSliding, isTouched;
     private boolean mIsInit;
-    private OnSliderChangeListener onSliderChangeListener;
-    private int tempProgress;
+    private OnSliderChangeListener onSliderChangeListener, internalOnSliderChangeListener;
+    private int mTempProgress;
+    private GlobalSliderListener mGlobalSliderListener;
 
     //enum
     enum Orientation {
@@ -149,6 +150,8 @@ public class Slider extends View {
 
     private void init() {
 
+        mGlobalSliderListener = GlobalSliderListener.getInstance();
+
         mProgressDrawable = new ProgressDrawable(mProgressD);
         mThumbnail = new Thumbnail(mThumbnailD, mThumbnailDrawableRatio);
         mThumbnailPress = new Thumbnail(mThumbnailPressD, mThumbnailPressDrawableRatio);
@@ -193,7 +196,7 @@ public class Slider extends View {
         mProgressDrawable.setProgress(mProgress);
 
         //init thumbnail
-        mThumbnail.setAvailableArea(mMainRect); //restrict active area
+        mThumbnail.setAvailableArea(mMainRect);
         mThumbnail.setDrawableRatio(mThumbnailDrawableRatio);
         mThumbnail.setMax(mMax);
         mThumbnail.setStep(mStep);
@@ -203,8 +206,8 @@ public class Slider extends View {
         mThumbnail.setOnThumbnailChangeListener(new Thumbnail.OnThumbnailChangeListener() {
             @Override
             public void onProgressChanged(float centerX, float centerY, int progress, boolean isFromUser) {
-                if (onSliderChangeListener != null && mProgress != progress) {
-                    onSliderChangeListener.onProgressChanged(Slider.this, progress, isFromUser);
+                if (mProgress != progress) {
+                    internalOnSliderChangeListener.onProgressChanged(Slider.this, progress, isFromUser);
                 }
                 mProgress = progress;
                 mProgressDrawable.setProgress(mProgress);
@@ -214,10 +217,32 @@ public class Slider extends View {
         mThumbnail.setProgress(mProgress);
 
         //init thumbnailPress
-        mThumbnailPress.setAvailableArea(mMainRect); //restrict active area
+        mThumbnailPress.setAvailableArea(mMainRect);
         mThumbnailPress.setDrawableRatio(mThumbnailPressDrawableRatio);
         mThumbnailPress.setOrientation(Orientation.undefined);
 
+        internalOnSliderChangeListener = new OnSliderChangeListener() {
+            @Override
+            public void onProgressChanged(Slider slider, int progress, boolean fromUser) {
+                if (onSliderChangeListener != null)
+                    onSliderChangeListener.onProgressChanged(slider, progress, fromUser);
+                mGlobalSliderListener.onSliderChangeListener.onProgressChanged(slider, progress, fromUser);
+            }
+
+            @Override
+            public void onStartTrackingTouch(Slider slider) {
+                if (onSliderChangeListener != null)
+                    onSliderChangeListener.onStartTrackingTouch(slider);
+                mGlobalSliderListener.onSliderChangeListener.onStartTrackingTouch(slider);
+            }
+
+            @Override
+            public void onStopTrackingTouch(Slider slider) {
+                if (onSliderChangeListener != null)
+                    onSliderChangeListener.onStopTrackingTouch(slider);
+                mGlobalSliderListener.onSliderChangeListener.onStopTrackingTouch(slider);
+            }
+        };
         mIsInit = true;
     }
 
@@ -268,12 +293,11 @@ public class Slider extends View {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 if (mThumbnail.isTouched(x, y)) {
-                    if (onSliderChangeListener != null)
-                        onSliderChangeListener.onStartTrackingTouch(this);
+                    internalOnSliderChangeListener.onStartTrackingTouch(this);
                     isTouched = true;
                     updateThumbnailPosition(x, y);
                     postInvalidate();
-                    tempProgress = getProgress();
+                    mTempProgress = getProgress();
                 } else {
                     return false;
                 }
@@ -281,7 +305,7 @@ public class Slider extends View {
             case MotionEvent.ACTION_MOVE:
                 if (isTouched) {
                     if (!mIsSliding)
-                        mIsSliding = tempProgress != getProgress();
+                        mIsSliding = mTempProgress != getProgress();
                     updateThumbnailPosition(x, y);
                     postInvalidate();
                 }
@@ -295,15 +319,14 @@ public class Slider extends View {
                     mIsSliding = false;
                     isTouched = false;
                     postInvalidate();
-                    if (onSliderChangeListener != null)
-                        onSliderChangeListener.onStopTrackingTouch(this);
+                    internalOnSliderChangeListener.onStopTrackingTouch(this);
                 }
                 break;
         }
         return true;
     }
 
-    void updateThumbnailPosition(float x, float y) {
+    private void updateThumbnailPosition(float x, float y) {
         if (mRelativeTouchPoint)
             mThumbnail.setRelativePosition(x, y);
         else

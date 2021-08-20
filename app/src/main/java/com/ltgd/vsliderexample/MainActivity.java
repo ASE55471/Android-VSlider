@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.ltgd.vslider.GlobalSliderListener;
 import com.ltgd.vslider.Slider;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +44,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        GlobalSliderListener.getInstance().setOnSliderChangeListener(new Slider.OnSliderChangeListener() {
+            @Override
+            public void onProgressChanged(Slider slider, int progress, boolean fromUser) {
+                Log.d(TAG, "GlobalSliderListener: onProgressChanged: " + progress + " fromUser: " + fromUser);
+            }
+
+            @Override
+            public void onStartTrackingTouch(Slider slider) {
+                Log.d(TAG, "GlobalSliderListener: onStartTrackingTouch: " );
+            }
+
+            @Override
+            public void onStopTrackingTouch(Slider slider) {
+                Log.d(TAG, "GlobalSliderListener: onStopTrackingTouch: ");
+            }
+        });
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
