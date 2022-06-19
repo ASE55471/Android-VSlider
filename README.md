@@ -1,5 +1,5 @@
 ## VSlider-Android
-An Android rewritten seekerbar supports both vertical and horizontal with some useful features. 
+An rewritten seekerbar supports both vertical and horizontal with some useful features. 
 
 ### max:integer
 Max value
