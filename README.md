@@ -38,7 +38,7 @@ Thumbnail scale ratio
 Thumbnail scale ratio when pressed
 
 ### relativeTouchPoint:boolean
-If this mode is on the thumbnail center won't jump to your finger position when pressed
+If this mode is on the thumbnail center won't jump to your finger position when pressed.
 
 ### rotateThumbnailDrawableDegree:integer
 Thumbnail angle
@@ -47,4 +47,4 @@ Thumbnail angle
 Progress area offset
 
 ### step:integer
-Span of each step. Must lower then max value, if max is 49 and step is 5, the progress is 10 step and last span of step is 4 , but if you call setProgress in realtime is still free between max
+Span of each step, Must lower then max value. If max is 49 and step is 5, the progress is 10 step and last span of step is 4 , but if you call setProgress in realtime is still free between max.
