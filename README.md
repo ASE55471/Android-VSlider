@@ -1,6 +1,10 @@
 ## VSlider-Android
 An rewritten seekerbar supports both vertical and horizontal with some useful features. 
 
+<img src="https://user-images.githubusercontent.com/57599172/228411698-a3058fba-bbae-4484-ab64-16e09d28545c.gif" width="256">
+
+## Document
+
 ### max:integer
 Max value
 
