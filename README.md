@@ -3,6 +3,28 @@ An rewritten seekerbar supports both vertical and horizontal with some useful fe
 
 <img src="https://user-images.githubusercontent.com/57599172/228411698-a3058fba-bbae-4484-ab64-16e09d28545c.gif" width="256">
 
+## Implementation
+
+Add it in your root build.gradle at the end of repositories:
+
+```
+dependencies {
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+}
+```
+
+Add the dependency:
+```
+dependencies {
+	  implementation 'com.github.ASE55471:Android-VSlider:v0.9.0'
+}
+```
+
 ## Document
 
 ### max:integer
