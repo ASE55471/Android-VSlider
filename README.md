@@ -73,4 +73,4 @@ Thumbnail angle
 Progress area offset
 
 ### step:integer
-Span of each step, Must lower then max value. If max is 49 and step is 5, the progress is 10 step and last span of step is 4 , but if you call setProgress in realtime is still free between max.
+Span of each step, Must lower then max value. If max value is 49 and the step is 5, the progress will be 10 step and last span of step is 4, But if you call setProgress in realtime is still free to set.
